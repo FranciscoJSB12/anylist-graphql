@@ -21,9 +21,9 @@ export class Item {
   @Field(() => Float)
   quantity: number;
 
-  @Column()
-  @Field(() => String)
-  quantityUnits: string;
+  @Column({ nullable: true }) // es importante permitir nulos en la base de datos
+  @Field(() => String, { nullable: true }) // aquí estamos permitiendo nulos en graphql
+  quantityUnits?: string;
 }
 
 //IMPORTANTE: luego de declara la entidad, que es cómo será la tabla en la base de datos, vamos al module (items.module) en este caso y lo importamos como se hizo, con esto ya se establece la tabla

@@ -14,11 +14,11 @@ export class ItemsService {
 
   async create(createItemInput: CreateItemInput): Promise<Item> {
     const newItem = this.itemsRepository.create(createItemInput);
-    return this.itemsRepository.save(newItem);
+    return await this.itemsRepository.save(newItem);
   }
 
   async findAll(): Promise<Item[]> {
-    return this.itemsRepository.find();
+    return await this.itemsRepository.find();
   }
 
   async findOne(id: string) {
@@ -34,7 +34,7 @@ export class ItemsService {
 
     if (!item) throw new NotFoundException(`Item with id ${updateItemInput.id} not found`);
     
-    return this.itemsRepository.save(item);
+    return await this.itemsRepository.save(item);
   }
 
   async remove(id: string): Promise<Item> {

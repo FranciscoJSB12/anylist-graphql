@@ -1,5 +1,5 @@
 import { ObjectType, ID, Field } from '@nestjs/graphql';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, JoinColumn } from 'typeorm';
 
 @Entity({ name: 'users' })
 @ObjectType()
@@ -36,4 +36,15 @@ export class User {
   })
   @Field(() => Boolean)
   isActive: boolean;
+
+  @ManyToOne(() => User, (user) => user.lastUpdateBy, { nullable: true, lazy: true })
+  @JoinColumn({ name: 'lastUpdateBy' })
+  @Field(() => User, { nullable: true })
+  //1. Decimos que regresa user () => User
+  //2. Establecemos cómo se relaciona (user) => user.lastUpdateBy
+  //3. Como la relación al inicio es nula marcamos el campo nullable en true
+  //4. Hace falta añadir el @JoinColumn() porque se necesita que siempre esté ahí y también vamos a poder hacer cuando se hagan consultas saber que hay una relación ahí para que typeorm cargue la información
+  //5. Falta añadir un @Field() ya que con lo descrito typeorm puede trabajar, pero Graphql no. Indicamos el tipo de dato a regresar con () => User en el Field y como puede ser nulo decimos nullable: true
+  //6. Aplicamos lazy: true para que cargue por defecto la relación, no se usa eager porque tenemos el querybuilder
+  lastUpdateBy?: User;
 }

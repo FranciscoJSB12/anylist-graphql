@@ -9,7 +9,8 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
-      forbidNonWhitelisted: true
+      forbidNonWhitelisted: false
+      //forbidNonWhitelisted: false si se estuviera trabajando con una rest api sería util ternerlo en true para evitar que nos manden más información de la que se espera, en este caso graphql lo hace por nosotros, por lo que no hace falta
     })
   );
   

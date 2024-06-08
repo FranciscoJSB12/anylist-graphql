@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { Like, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import { CreateItemInput, UpdateItemInput } from './dto/inputs';
 import { Item } from './entities/item.entity';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
+import { PaginationArgs, SearchArgs } from '../common/dto/args';
 
 @Injectable()
 export class ItemsService {
@@ -18,14 +19,36 @@ export class ItemsService {
     return await this.itemsRepository.save(newItem);
   }
 
-  async findAll(user: User): Promise<Item[]> {
-    return await this.itemsRepository.find({
+  async findAll(user: User, paginationArgs: PaginationArgs, searchArgs: SearchArgs): Promise<Item[]> {
+
+    const { limit, offset } = paginationArgs;
+
+    const { search } = searchArgs;
+
+    const queryBuilder = this.itemsRepository.createQueryBuilder()
+      .take(limit)
+      .skip(offset)
+      .where(`"userId" = :userId`, { userId: user.id });
+      //Las comillas dobles indican que se quiere el campo userId y no el objeto usuario, luego con :userId se manda el argumento
+    
+    if (search) {
+      queryBuilder.andWhere('LOWER(name) like :name', { name: `%${search.toLowerCase()}%`});
+    }
+
+    return queryBuilder.getMany(); 
+
+    /*return await this.itemsRepository.find({
+      take: limit,
+      skip: offset,
       where: {
         user: {
           id: user.id
-        }
+        },
+        name: Like(`%${search}%`),
       }
     });
+    Esta es una forma de hacerlo, pero tiene ventajas como el hecho de que va a distinguir mayuculas de minúsculas en la búsqueda
+    */
   }
 
   async findOne(id: string, user: User) {

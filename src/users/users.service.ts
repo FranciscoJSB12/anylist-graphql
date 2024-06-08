@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { SignupInput } from '../auth/dto/inputs/signup.input';
 import { ValidRoles } from '../auth/enums/valid-roles.enum';
+import { UpdateUserInput } from './dto/update-user.input';
 
 
 @Injectable()
@@ -74,6 +75,22 @@ export class UsersService {
     userToBlock.lastUpdateBy = adminUser;
 
     return await this.usersRepository.save(userToBlock);
+  }
+
+  async update(id: string, updateUserInput: UpdateUserInput, updateBy: User): Promise<User> {
+    try {
+      const user = await this.usersRepository.preload({
+        ...updateUserInput,
+        id
+      });
+
+      user.lastUpdateBy = updateBy;
+
+      return await this.usersRepository.save(user);
+
+    } catch (err) {
+      this.handleDBErrors(err);
+    }
   }
 
   private handleDBErrors(err: any): never {

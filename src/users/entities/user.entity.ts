@@ -43,7 +43,7 @@ export class User {
   //1. Decimos que regresa user () => User
   //2. Establecemos cómo se relaciona (user) => user.lastUpdateBy
   //3. Como la relación al inicio es nula marcamos el campo nullable en true
-  //4. Hace falta añadir el @JoinColumn() porque se necesita que siempre esté ahí y también vamos a poder hacer cuando se hagan consultas saber que hay una relación ahí para que typeorm cargue la información
+  //4. Hace falta añadir el @JoinColumn() porque se necesita que siempre esté ahí y también cuando se hagan consultas podemos saber que hay una relación ahí para que typeorm cargue la información
   //5. Falta añadir un @Field() ya que con lo descrito typeorm puede trabajar, pero Graphql no. Indicamos el tipo de dato a regresar con () => User en el Field y como puede ser nulo decimos nullable: true
   //6. Aplicamos lazy: true para que cargue por defecto la relación, no se usa eager porque tenemos el querybuilder
   lastUpdateBy?: User;

@@ -1,5 +1,5 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, Index } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 
 @Entity({ name: 'items' })
@@ -30,7 +30,9 @@ export class Item {
   //2. Relacionamos el item con el usuario con () => User
   //3. Sigue establecer el campo que se va a establecer para la relación
   //4. Eso sería todo en cuanto a TypeOrm, sigue establecerlo para graphql con @Field(() => User) 
-  @ManyToOne(() => User, (user) => user.items)
+  //5. Como puede ser que tengamos miles de articulos y queremos que las consultas sean de forma rápida podemos añadir un indice con @Index('nombre') de esta manera maneja ese indice para cuando se haga la consulta, lo que ayuda a consultas más rápidas
+  @ManyToOne(() => User, (user) => user.items, { nullable: false })
+  @Index('user-Id-index')
   @Field(() => User)
   user: User;
 }

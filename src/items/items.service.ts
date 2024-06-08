@@ -3,17 +3,18 @@ import { CreateItemInput, UpdateItemInput } from './dto/inputs';
 import { Item } from './entities/item.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class ItemsService {
 
   constructor(
-    @InjectRepository(Item) // este decorador injectrepositorio es necesario para que pueda funcionarl item repository
+    @InjectRepository(Item) // este decorador injectrepositorio es necesario para que pueda funcionar item repository
     private readonly itemsRepository: Repository<Item>
   ){}
 
-  async create(createItemInput: CreateItemInput): Promise<Item> {
-    const newItem = this.itemsRepository.create(createItemInput);
+  async create(createItemInput: CreateItemInput, user: User): Promise<Item> {
+    const newItem = this.itemsRepository.create({...createItemInput, user });
     return await this.itemsRepository.save(newItem);
   }
 

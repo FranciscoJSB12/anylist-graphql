@@ -18,19 +18,31 @@ export class ItemsService {
     return await this.itemsRepository.save(newItem);
   }
 
-  async findAll(): Promise<Item[]> {
-    return await this.itemsRepository.find();
+  async findAll(user: User): Promise<Item[]> {
+    return await this.itemsRepository.find({
+      where: {
+        user: {
+          id: user.id
+        }
+      }
+    });
   }
 
-  async findOne(id: string) {
-    const item = await this.itemsRepository.findOneBy({ id });
+  async findOne(id: string, user: User) {
+    const item = await this.itemsRepository.findOneBy({ id, user: {
+        id: user.id,
+      }
+    });//Al aplicar la intsrucción de esta forma es como decir where id sea tal y user sea tal
 
     if (!item) throw new NotFoundException(`Item with id ${id} not found`);
 
     return item;
   }
 
-  async update(updateItemInput: UpdateItemInput):Promise<Item> {
+  async update(id: string, updateItemInput: UpdateItemInput, user: User):Promise<Item> {
+    await this.findOne(id, user);
+
+    //const item = await this.itemsRepository.preload({...updateItemInput, user}); lo podemos hacer así también en vez de colocar el lazy en el item entity
     const item = await this.itemsRepository.preload(updateItemInput);
 
     if (!item) throw new NotFoundException(`Item with id ${updateItemInput.id} not found`);
@@ -38,11 +50,21 @@ export class ItemsService {
     return await this.itemsRepository.save(item);
   }
 
-  async remove(id: string): Promise<Item> {
-    const item = await this.findOne(id);
+  async remove(id: string, user: User): Promise<Item> {
+    const item = await this.findOne(id, user);
 
     await this.itemsRepository.remove(item);
 
     return { ...item, id };
+  }
+
+  async itemCountByUser(user: User): Promise<number> {
+    return this.itemsRepository.count({
+      where: {
+        user: {
+          id: user.id
+        }
+      }
+    });
   }
 }

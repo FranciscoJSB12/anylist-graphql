@@ -55,7 +55,7 @@ export class User {
   //3. Ahora se establece cómo la entidad de usuarios se relaciona con la entidad de items, se hace con (item) => item.user
   //4. Si no se indica que es nulo, entonces se entiende que siempre va a haber un valor
   //5. Listo todo en cuanto a TypeOrm, sigue graphql y se hace con un @Field(), le decimos qué va a regresar con () => [Item], no se coloca opcional porque siempre vas tener un valor
-  @OneToMany(() => Item, (item) => item.user)
+  @OneToMany(() => Item, (item) => item.user, { lazy: true })
   @Field(() => [Item])
   items: Item[];
 }

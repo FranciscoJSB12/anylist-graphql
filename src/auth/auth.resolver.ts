@@ -18,7 +18,9 @@ export class AuthResolver {
   }
 
   @Mutation(() => AuthResponse, { name: 'login'})
-  login(@Args('loginInput') loginInput: LoginInput): Promise<AuthResponse> {
+  login(
+    @Args('loginInput') loginInput: LoginInput,
+  ): Promise<AuthResponse> {
     return this.authService.login(loginInput);
   }
   

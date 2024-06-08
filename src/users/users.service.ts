@@ -3,7 +3,8 @@ import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { SignupInput } from 'src/auth/dto/inputs/signup.input';
+import { SignupInput } from '../auth/dto/inputs/signup.input';
+import { ValidRoles } from '../auth/enums/valid-roles.enum';
 
 
 @Injectable()
@@ -31,8 +32,18 @@ export class UsersService {
     }
   }
 
-  async findAll(): Promise<User[]> {
-    return [];
+  async findAll(roles: ValidRoles[]): Promise<User[]> {
+    if (roles.length === 0) return this.usersRepository.find();
+
+    return this.usersRepository.createQueryBuilder()
+      .andWhere('ARRAY[roles] && ARRAY[:...roles]')
+      //ARRAY[roles] esto busca en el arreglo de roles
+      //&& significa que tiene que estar en el array de
+      //ARRAY[: quiere decir que se manda un parámetro
+      //...roles está diciendo que se esparce y que busque alguno
+      .setParameter('roles', roles)
+      //setParameter es para mandar el parámetro
+      .getMany();
   }
 
   async findOneByEmail(email: string): Promise<User> {

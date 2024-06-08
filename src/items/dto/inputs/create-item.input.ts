@@ -10,9 +10,9 @@ export class CreateItemInput {
   @IsString()
   name: string;
 
-  @Field(() => Float)
-  @IsPositive()
-  quantity: number;
+  //@Field(() => Float)
+  //@IsPositive()
+  //quantity: number;
 
   @Field(() => String, { nullable: true }) // los decoradores field controlan como viene la data en graphql y si puede haber campos nulos
   @IsString()

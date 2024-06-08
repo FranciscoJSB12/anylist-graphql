@@ -1,5 +1,6 @@
-import { ObjectType, Field, ID, Float } from '@nestjs/graphql';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { ObjectType, Field, ID } from '@nestjs/graphql';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from '../../users/entities/user.entity';
 
 @Entity({ name: 'items' })
 //El decorador entity no viene por defecto, pero es necesario aplicarlo
@@ -17,13 +18,21 @@ export class Item {
   @Field(() => String)
   name: string;
 
-  @Column()
-  @Field(() => Float)
-  quantity: number;
+  //@Column()
+  //@Field(() => Float)
+  //quantity: number;
 
   @Column({ nullable: true }) // es importante permitir nulos en la base de datos
   @Field(() => String, { nullable: true }) // aquí estamos permitiendo nulos en graphql
   quantityUnits?: string;
+
+  //1. En este punto aplicamos una relación entre usuarios e items escribiendo el decorador ManyToOne
+  //2. Relacionamos el item con el usuario con () => User
+  //3. Sigue establecer el campo que se va a establecer para la relación
+  //4. Eso sería todo en cuanto a TypeOrm, sigue establecerlo para graphql con @Field(() => User) 
+  @ManyToOne(() => User, (user) => user.items)
+  @Field(() => User)
+  user: User;
 }
 
 //IMPORTANTE: luego de declarar la entidad, que es cómo será la tabla en la base de datos, vamos al module (items.module) en este caso y lo importamos como se hizo, con esto ya se establece la tabla

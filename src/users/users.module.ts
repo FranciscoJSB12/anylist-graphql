@@ -12,7 +12,7 @@ import { ItemsModule } from '../items/items.module';
     ItemsModule
   ],
   exports: [
-    //TypeOrmModule,
+    TypeOrmModule,
     //Exportamos el TypeOrmModule en caso de alguien necesite el users.entity o inyectar el usersRepository
     UsersService
     //Al hacer la exportación del UsersService toca irse al auth.module para hacer la importación

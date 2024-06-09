@@ -1,6 +1,7 @@
 import { ObjectType, ID, Field } from '@nestjs/graphql';
 import { Item } from '../../items/entities/item.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, JoinColumn, OneToMany } from 'typeorm';
+import { List } from '../../lists/entities/list.entity';
 
 @Entity({ name: 'users' })
 @ObjectType()
@@ -58,4 +59,7 @@ export class User {
   @OneToMany(() => Item, (item) => item.user, { lazy: true })
   //@Field(() => [Item]) si se comenta esta línea es como que para graphql no hay items
   items: Item[];
+
+  @OneToMany(() => List, (list) => list.user)
+  lists: List[];
 }

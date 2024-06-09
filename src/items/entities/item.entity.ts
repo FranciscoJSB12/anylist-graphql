@@ -1,6 +1,7 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, Index } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, Index, OneToMany } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
+import { ListItem } from '../../list-item/entities/list-item.entity';
 
 @Entity({ name: 'items' })
 //El decorador entity no viene por defecto, pero es necesario aplicarlo
@@ -36,6 +37,10 @@ export class Item {
   @Index('user-Id-index')
   @Field(() => User)
   user: User;
+
+  @OneToMany(() => ListItem, (listItem) => listItem.item, { lazy: true })
+  @Field(() => [ListItem])
+  listItem: ListItem[];
 }
 
 //IMPORTANTE: luego de declarar la entidad, que es cómo será la tabla en la base de datos, vamos al module (items.module) en este caso y lo importamos como se hizo, con esto ya se establece la tabla

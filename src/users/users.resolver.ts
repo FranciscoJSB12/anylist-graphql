@@ -2,12 +2,14 @@ import { Resolver, Query, Mutation, Args, ID, ResolveField, Int, Parent } from '
 import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
+import { Item } from '../items/entities/item.entity';
 import { ValidRolesArgs } from './dto/args/roles.arg';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { ValidRoles } from '../auth/enums/valid-roles.enum';
 import { UpdateUserInput } from './dto/update-user.input';
 import { ItemsService } from '../items/items.service';
+import { PaginationArgs, SearchArgs } from '../common/dto/args';
 
 @Resolver(() => User)
 @UseGuards(JwtAuthGuard)
@@ -51,11 +53,21 @@ export class UsersResolver {
   }
 
   @ResolveField(() => Int, { name: 'itemCount' })
-  //necesitamos el resolve field para creamos una modificación en el esquema y diciendo que vamos a tener un nuevo campo, siendo el motor a usar para resolver el campo cuando sea solicitado
+  //necesitamos el resolve field para crearnos una modificación en el esquema y decir que vamos a tener un nuevo campo, siendo el motor a usar para resolver el campo cuando sea solicitado, básicamente se está creando un campo independiente, cuando se consulten los item, van a ser consultados gracias a que tienen la relación con el padre 
   async itemCount(
     @Parent() user: User,
     @CurrentUser([ValidRoles.admin ]) adminUser: User
   ): Promise<number> {
     return this.itemsService.itemCountByUser(user);
+  }
+
+  @ResolveField(() => [Item], { name: 'items' })
+  async getItemsByUser(
+    @Parent() user: User,
+    @CurrentUser([ValidRoles.admin ]) adminUser: User,
+    @Args() paginationArgs: PaginationArgs,
+    @Args() searchArgs: SearchArgs
+  ): Promise<Item[]> {
+    return this.itemsService.findAll(user, paginationArgs, searchArgs);
   }
 }
